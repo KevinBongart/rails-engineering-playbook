@@ -9,15 +9,6 @@ continuous integration, deployment and operations, documentation architecture,
 the product development workflow, agentic editing standards, and a definition of
 done.
 
-## Why this is a separate repository
-
-Earlier editions were copied into each application's `docs/` directory. The
-copies drifted apart — at the point of extraction two of them differed by 168
-lines, and the older copy was missing an entire section the newer one had
-gained. Neither repository could tell which version was current.
-
-One repository, referenced rather than vendored, removes that failure mode.
-
 ## Using it from an application
 
 Clone this repository as a sibling of the application repositories that
