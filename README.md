@@ -12,8 +12,8 @@ done.
 ## Why this is a separate repository
 
 Earlier editions were copied into each application's `docs/` directory. The
-copies drifted apart within weeks — at one point two of them differed by 81
-lines, and the older copy had silently lost an entire section the newer one had
+copies drifted apart — at the point of extraction two of them differed by 168
+lines, and the older copy was missing an entire section the newer one had
 gained. Neither repository could tell which version was current.
 
 One repository, referenced rather than vendored, removes that failure mode.
