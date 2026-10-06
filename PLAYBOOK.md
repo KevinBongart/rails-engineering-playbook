@@ -2,7 +2,7 @@
 
 Status: cross-repository default
 
-Last reviewed: 2026-09-29
+Last reviewed: 2026-10-06
 
 ## Purpose
 
@@ -314,6 +314,12 @@ same application.
 - Keep migrations reversible when a truthful rollback exists; raise an explicit
   irreversible migration when rollback would lose or misinterpret data.
 - Consider table locks and deployment duration for migrations on live tables.
+- For applications with live PostgreSQL, run a maintained migration-safety
+  checker against future migrations with a short lock timeout and bounded
+  statement timeout. Exempt historical migrations rather than rewriting them,
+  and require a written reason for each narrow safety override. One application
+  verified this gate with mutation probes that rejected both a non-concurrent
+  index and an unexplained raw override.
 - Test important constraints by bypassing model validations.
 - Make retryable writes idempotent with a token or natural key rather than
   guessing whether two similar records were intentional.
@@ -564,6 +570,11 @@ spec in Selenium makes the suite slower and more fragile without adding value.
 - Use transactional tests where possible.
 - Build test data with factories or fixtures; do not reload full seeds before
   every example.
+- Prepare CI test databases without application seeds unless the suite explicitly
+  tests seed data. A migration-replay gate once used `db:prepare` on a new test
+  database, which loaded seeds and polluted unrelated examples; use an explicit
+  schema load, or migrate from empty when replaying migrations is the behavior
+  under test.
 - A factory must create a realistic valid object without relying on pre-existing
   seed rows.
 - Run examples in random order and make time travel block-scoped or reliably
