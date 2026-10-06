@@ -579,6 +579,13 @@ spec in Selenium makes the suite slower and more fragile without adding value.
   seed rows.
 - Run examples in random order and make time travel block-scoped or reliably
   reset.
+- After browser navigation or history restoration, synchronize on the observable
+  state that makes the next interaction possible: rendered frame content, an
+  enabled control, a controller-added attribute, or a focusable element. Do not
+  replace that boundary with a fixed sleep or an automatic retry. One system spec
+  reached the restored URL before a table header's keyboard enhancement had
+  reattached; waiting until the header became focusable removed the race while
+  preserving the keyboard assertion.
 - Prevent real emails, payments, AI calls, and HTTP requests by default.
 - Keep auth bypasses narrow and add explicit tests with real authentication.
 - Test malformed input, empty state, provider failure, and rollback—not only the
