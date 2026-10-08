@@ -2,7 +2,7 @@
 
 Status: cross-repository default
 
-Last reviewed: 2026-10-06
+Last reviewed: 2026-10-08
 
 ## Purpose
 
@@ -354,6 +354,25 @@ Add negative request tests proving that one tenant cannot read, update, or delet
 another tenant's records. Authorization is incomplete until the forbidden case is
 tested.
 
+Entitlement that is not ownership needs the same discipline and one definition.
+When a collection is filtered by something other than the viewer's own
+association — an approver sees expense reports that are submitted and belong to
+their department — write that filter once as a scope and use it for both the
+collection and the member lookup. An index that filters while `show` calls
+`Model.find` is a disclosure waiting for someone to edit a URL, and tests that
+only exercise the index cannot see it.
+
+Where the two paths disagree, prefer failing closed on the narrower one, and
+check ownership before entitlement: a user who is both an approver and an
+ordinary submitter must not lose access to their own records because the
+approver rule is evaluated first.
+
+Extend the rule to whatever the page links to. A file served through a storage
+redirect is a second read path, authorized when the link is rendered rather than
+when it is followed, so revoking entitlement does not reach a URL already
+issued. Serve it through an action that re-checks on each request, and make the
+signed URL short-lived.
+
 ### Query discipline
 
 - Preload associations intentionally with `includes` or `preload`.
@@ -577,6 +596,11 @@ spec in Selenium makes the suite slower and more fragile without adding value.
   under test.
 - A factory must create a realistic valid object without relying on pre-existing
   seed rows.
+- Give factory records identifiers that tell them apart. An assertion that a
+  response includes `record.title` proves nothing when every record the factory
+  builds shares one title: it passes for any row, including the row the change
+  under test was supposed to exclude. Two such assertions once guarded an
+  authorization fix and would both have passed with the fix reverted.
 - Run examples in random order and make time travel block-scoped or reliably
   reset.
 - Prevent real emails, payments, AI calls, and HTTP requests by default.
