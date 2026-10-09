@@ -425,6 +425,43 @@ Before a Bootstrap or asset-stack upgrade, inventory JavaScript-dependent form
 helpers and plugins such as nested-field libraries. Keep that upgrade isolated
 until their add/remove flows have browser coverage and representative visual QA.
 
+### In-page anchors under Turbolinks and Turbo
+
+A same-page fragment link is a visitable location to Turbolinks and Turbo. They
+call `preventDefault()` on the click and issue a request for the current page,
+replacing `<body>` — so a contents list or a skip link costs a server render per
+click, drops focus while the response is in flight, and discards any
+client-side state on the page.
+
+Opt those links out, with `data-turbolinks="false"` or `data-turbo="false"` on
+the container, and let the browser do the jump it already knows how to do.
+Native fragment navigation also runs the focusing steps, so a target carrying
+`tabindex="-1"` receives focus without any script.
+
+Assert it. The symptom is invisible on a cold first click — the behaviour
+differs once a page snapshot is cached — so a test that clicks once and checks
+where focus landed passes either way. Count navigation events instead:
+
+```erb
+<nav aria-label="On this page" data-turbolinks="false">
+```
+
+```ruby
+page.execute_script(<<~JS)
+  window.visits = 0
+  document.addEventListener("turbolinks:visit", () => window.visits++)
+JS
+within("nav[aria-label='On this page']") { click_link("Refund policy") }
+expect(page).to have_css("#refund-policy:focus")
+expect(page.evaluate_script("window.visits")).to eq(0)
+```
+
+This was found on a long public document where a contents list was added for
+retrieval. Every entry re-fetched the whole page, and the first fix was a
+script that moved focus by hand — which turned out to be working around the
+round trip rather than solving it. Deleting the script and opting the links out
+was both smaller and correct.
+
 ### JavaScript is a last-mile enhancement
 
 Before writing JavaScript, ask whether the behavior can be handled by:
