@@ -2,7 +2,7 @@
 
 Status: cross-repository default
 
-Last reviewed: 2026-10-06
+Last reviewed: 2026-10-09
 
 ## Purpose
 
@@ -600,6 +600,41 @@ mobile sizes, and check logs for errors and query growth.
 Automated tests and a real-data or visual smoke check catch different classes of
 failure. Use both in proportion to risk.
 
+### Assert the negative guarantee, not the setting that should produce it
+
+Some tooling earns its keep by what it promises *not* to do. A wrapper that
+gives an automation account its own identity promises that it will not touch
+the developer's checkout and will not fall back to the developer's credentials.
+Those promises cannot be established by reading the wrapper, because the
+behavior comes from how the underlying tool resolves layered configuration, not
+from the lines in front of you.
+
+A wrapper of exactly that shape went through two rounds of review carrying
+three defects that all failed by *succeeding as the human*: it wrote identity
+into a linked git worktree, which shares `.git/config` with the main checkout,
+so a single run rebranded the developer's own clone permanently;
+`credential.helper` is multi-valued and tried in order, so the helper inherited
+from the developer's global configuration answered first; and the remote was
+SSH, where credential helpers do not apply at all, so the credential the
+wrapper configured was never consulted. Each was found by running one command
+and reading the answer. None was found by reading the source.
+
+Write the assertion the promise actually makes:
+
+- Resolve the thing and compare it to the expected value, rather than asserting
+  that the setting which ought to produce it is present.
+- Snapshot the state the tool promises not to touch, run the tool, and compare.
+- Make the check runnable on a real machine as a preflight, not only inside a
+  hermetic example. The fixture is the one environment where the promise is
+  guaranteed to hold, so it is the one environment that cannot falsify it.
+
+That last point has its own scar. The preflight reporting whether an automation
+session held its own credentials read the configuration directory from an
+environment variable that existed only inside the wrapper. Run on its own —
+which is precisely when it is asked — it reported the credentials missing on a
+fully working machine. A check that cries wolf on a healthy setup trains
+everyone to ignore it, which is worse than not having it.
+
 ## Security and privacy baseline
 
 Security work should be proportionate to the application, but the baseline is not
@@ -694,6 +729,18 @@ split scan, lint, and test jobs when parallel feedback is useful.
 CI is not a substitute for local verification. Conversely, a local green suite
 does not turn an unexplained hosted failure into success. Distinguish code
 failures from runner/infrastructure failures with evidence.
+
+Make the local command reproduce the hosted *environment*, not only the hosted
+command list. A runner that installs a frozen bundle, resolves a different
+interpreter version, or exports a variable the local command does not is a
+second environment wearing the first one's name. One suite's examples spawned
+child processes, which inherited `bundle exec`'s `RUBYOPT` and aborted at
+`bundler/setup` wherever the bundle was frozen — every hosted run and no local
+one. Four examples were green locally and red hosted through three rounds of
+review before anyone compared the two environments rather than re-reading the
+tests. Export the hosted settings from the local command, as overridable
+defaults rather than hard-coded values, so a green local gate means a green
+hosted run for more than the cases nobody has hit yet.
 
 Document the boundary between CI and deployment. A CI production-asset job may
 verify that compilation succeeds in a disposable filesystem; it must not imply
