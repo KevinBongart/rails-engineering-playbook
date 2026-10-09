@@ -698,6 +698,16 @@ and Node versions, start PostgreSQL and Redis only when needed, and install
 Firefox/geckodriver for real-browser specs. Keep the workflow understandable;
 split scan, lint, and test jobs when parallel feedback is useful.
 
+Cancel superseded workflows on non-default branches when the CI provider
+supports it. One five-job validation pipeline kept running after a newer commit
+made its result unable to authorize a merge, which queued the final-head checks
+behind obsolete work. Preserve complete workflows for the default branch,
+scheduled runs, and explicit reruns. After changing this account-level setting,
+verify it with two quick commits on a disposable branch: the first workflow
+should be canceled and the second should complete normally. Do not grant a
+development-agent token project-administration access merely to cancel runs
+after the fact.
+
 CI is not a substitute for local verification. Conversely, a local green suite
 does not turn an unexplained hosted failure into success. Distinguish code
 failures from runner/infrastructure failures with evidence.
