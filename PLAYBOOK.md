@@ -774,6 +774,13 @@ Omit the worker when there are no background jobs. Document the actual process
 types, backing PostgreSQL/Redis services, required environment variables, and
 first-deploy steps.
 
+Enforce required migrations in release phase and protect that configuration with
+an executable gate. In one rollout, CI and the build passed, and the health
+endpoint responded, while product requests failed because a required table had
+not been created. Before deploying a dependent change in a pull-request stack,
+verify that its prerequisite migration completed in the target environment;
+the parent pull request's merged status does not establish that condition.
+
 Every deployed Rails app should expose the framework's lightweight `/up` health
 endpoint. Configure the platform to make an HTTP request to `/up` before routing
 production traffic to a new web container; a listening port or fixed uptime alone
@@ -786,6 +793,14 @@ verification appropriate to the application's risk:
 - workers and schedules are running when applicable;
 - one key read path works;
 - logs contain no boot loop, migration, or asset error.
+
+When a deployed product check fails, make recovery the first action: identify a
+safe known-working release and tell the human how to roll back, or immediately
+open a revert pull request while diagnosing the forward fix. Check schema
+compatibility first; rolling back code does not reverse database changes. One
+rollout remained broken while an agent waited for production-write permission,
+even though a working release was available. Name the recovery owner and action
+instead of leaving production down while waiting on the forward fix.
 
 Do not check in an unedited Kamal file, Docker setup, queue config, or platform
 template that the application does not actually deploy through. Competing
