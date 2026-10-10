@@ -628,6 +628,15 @@ spec in Selenium makes the suite slower and more fragile without adding value.
   spacing, and action order. A close crop can prove color while hiding a layout
   regression.
 
+Probe environment-dependent mail behavior by booting the real environment files
+in isolation. A local invitation once failed because test URL defaults hid a
+missing development host; suppressed delivery errors also made "delivered" log
+markers inconclusive. Use synthetic credentials and recipients, an unreachable
+database, blocked network and SMTP, and a stubbed browser launcher. Verify
+absolute URLs and the configured adapter in each environment. For local browser
+previews, assert that files are written and the launcher is called; confirm the
+intended production and test adapters without sending external mail.
+
 ### Verification beyond automated tests
 
 For changes that depend on real provider data, run an authorized, read-only
