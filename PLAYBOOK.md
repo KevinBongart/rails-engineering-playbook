@@ -2,7 +2,7 @@
 
 Status: cross-repository default
 
-Last reviewed: 2026-10-08
+Last reviewed: 2026-10-10
 
 ## Purpose
 
@@ -550,6 +550,13 @@ Test public behavior. Do not call private controller methods with `send` or asse
 against internal instance variables when the behavior can be observed through a
 request, result object, rendered page, or database state.
 
+When moving configuration into persisted records while preserving behavior,
+assert representative literal values independently of the accessor under test.
+For dates, cover the instant, displayed date, and time zone. A settings-extraction
+review found that page expectations calculated through the same accessor could
+share its mistake; changing the zone made both the instant and display fail in
+the new literal expectations.
+
 ### Test layers
 
 - **Model tests:** validations, associations, constraints, scopes, and compact
@@ -721,6 +728,14 @@ Hosted CI should run for pull requests and pushes to `main`, use the pinned Ruby
 and Node versions, start PostgreSQL and Redis only when needed, and install
 Firefox/geckodriver for real-browser specs. Keep the workflow understandable;
 split scan, lint, and test jobs when parallel feedback is useful.
+
+Keep database reads out of class bodies, constant assignments, and initializers
+so boot and eager loading work before a database exists. Verify this with a gate
+that eager-loads against an absent database and checks that it cannot connect.
+An autoload check or a job without a database service does not establish that
+boundary. A settings-extraction review added this gate; a temporary load-time
+read made it fail with a missing-database error while the original code passed.
+Use such a mutation probe to confirm the gate rejects the intended regression.
 
 Cancel superseded workflows on non-default branches when the CI provider
 supports it. One five-job validation pipeline kept running after a newer commit
