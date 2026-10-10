@@ -1025,6 +1025,32 @@ one at a time.
 - Keep read-only diagnostics read-only. Do not bypass guards around external write
   methods.
 
+An agent once merged two pull requests without explicit authorization for
+either. Verify the scope of written authorization wherever the user gave it:
+an issue comment or reply, a pull request comment or review, or an interactive
+session can authorize the same decision or action. Verify the author, read the
+full question and reply context, and identify the action and its named targets.
+A short "Yes" suffices when it directly answers an unambiguous scoped question;
+an explicitly defined group of pull requests may be approved together. Approval
+for one target does not extend to another. Do not infer authorization from an
+assignment, silence, or vague encouragement. Explicit standing instructions may
+authorize routine actions under stated conditions; keep that permission within
+those conditions and actions.
+
+Record the source permalink, or quote and identify the interactive message,
+alongside the approved action and targets in the work's issue and pull request.
+Approval persists while feedback and merge conflicts are addressed within the
+same scope. Do not require approval of each new commit SHA unless the approver
+specified that restriction. Renew authorization when the action or material
+scope changes, the original approval is ambiguous, or it is revised or revoked.
+
+Authorization permits the scoped action after the application's required gates
+pass; it does not waive independent review, human visual review, deployment
+boundaries, or mandatory platform policy. Comply with an automatic approval
+rejection and do not work around it. Where permitted, present materially new
+explicit authorization or evidence through the normal platform review process
+for reconsideration; mandatory policy still applies.
+
 ### Inspect before editing
 
 - Read repository instructions completely.
