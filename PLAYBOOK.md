@@ -794,6 +794,14 @@ verification appropriate to the application's risk:
 - one key read path works;
 - logs contain no boot loop, migration, or asset error.
 
+When a deployed product check fails, make recovery the first action: identify a
+safe known-working release and tell the human how to roll back, or immediately
+open a revert pull request while diagnosing the forward fix. Check schema
+compatibility first; rolling back code does not reverse database changes. One
+rollout remained broken while an agent waited for production-write permission,
+even though a working release was available. Name the recovery owner and action
+instead of leaving production down while waiting on the forward fix.
+
 Do not check in an unedited Kamal file, Docker setup, queue config, or platform
 template that the application does not actually deploy through. Competing
 deployment stories create false instructions for both people and agents.
