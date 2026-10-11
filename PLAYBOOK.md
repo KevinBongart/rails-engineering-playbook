@@ -2,7 +2,7 @@
 
 Status: cross-repository default
 
-Last reviewed: 2026-10-10
+Last reviewed: 2026-10-11
 
 ## Purpose
 
@@ -461,6 +461,14 @@ Stimulus controllers should be small, single-purpose, and declaratively connecte
 through targets, values, and actions. They must clean up timers, event listeners,
 observers, and temporary DOM in `disconnect`. Keep server responses authoritative
 for persisted state.
+
+Preserve unfinished text input when replacing a form with an asynchronous server
+response. A live search once replaced the user's raw input with the server's
+trimmed query: typing `blue `, waiting for results, then typing `lake` became
+`bluelake`. Keep the raw field value across replacement, preserving focus and selection
+where applicable; use the normalized query for results and exports. Add a browser regression
+that pauses after a word separator long enough for a response, then finishes the
+next word. Fast typing alone can miss this failure.
 
 Do not hand-roll `fetch` and DOM replacement when a Turbo Frame is the natural
 solution. Do not make pointer-only interactions the sole path for essential
