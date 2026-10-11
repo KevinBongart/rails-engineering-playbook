@@ -2,7 +2,7 @@
 
 Status: cross-repository default
 
-Last reviewed: 2026-10-10
+Last reviewed: 2026-10-11
 
 ## Purpose
 
@@ -476,6 +476,14 @@ actions.
 - Keep decorative motion out of document flow so it cannot shift the page.
 - Verify that table, overflow, and transformed elements do not clip drag or
   animation feedback.
+- When expansion is intended to grow only the row, keep inline table disclosures
+  within the existing column: full text wraps, while neighboring columns and the
+  collapse control stay put.
+  An expansion once passed screenshot and accessibility checks but widened its
+  whole column and moved its collapse control. In a real browser, compare column
+  widths, neighbor positions, and control coordinates before and after opening;
+  click the same viewport point to close it. Bring the control into view first
+  and account for scrolling so the geometry assertion measures the interaction.
 - Run axe-core in the real headless browser against representative pages and
   dynamic states, such as public, authenticated, error, and open-dialog states
   when they exist. For RSpec/Capybara applications, prefer Deque's maintained
@@ -556,6 +564,13 @@ For dates, cover the instant, displayed date, and time zone. A settings-extracti
 review found that page expectations calculated through the same accessor could
 share its mistake; changing the zone made both the instant and display fail in
 the new literal expectations.
+
+For data-derived display cutoffs, use varied synthetic lengths that distinguish
+one percentile from another. A cutoff test once used repeated ordinary lengths
+and one outlier, so switching between p90 and p95 still passed. Pin the chosen
+policy with independent literal expectations. Inform the product choice with
+already-authorized representative aggregate inspection, reporting lengths and
+counts rather than source content; a test can enforce the choice after it is made.
 
 ### Test layers
 
