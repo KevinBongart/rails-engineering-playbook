@@ -2,7 +2,7 @@
 
 Status: cross-repository default
 
-Last reviewed: 2026-10-11
+Last reviewed: 2026-10-12
 
 ## Purpose
 
@@ -321,6 +321,12 @@ same application.
   verified this gate with mutation probes that rejected both a non-concurrent
   index and an unexplained raw override.
 - Test important constraints by bypassing model validations.
+- Missing-value backfills and replayable seed paths for those attributes must
+  preserve explicitly supplied values. Keep the missing-value predicate on each
+  update, not only the initial batch selection, and check other replayable
+  writers of the same attributes. A NULL-only repair
+  once preserved an explicit override while a seed rerun overwrote it; testing
+  both an existing override and a missing value exposed the second writer.
 - Make retryable writes idempotent with a token or natural key rather than
   guessing whether two similar records were intentional.
 - Before dropping a legacy column, inspect an authorized representative
@@ -565,6 +571,12 @@ boundary match should prove both `away` and `Castaway` behavior.
 Test public behavior. Do not call private controller methods with `send` or assert
 against internal instance variables when the behavior can be observed through a
 request, result object, rendered page, or database state.
+
+For preview-and-confirm flows, assert that the rendered preview shows the user's
+chosen values before they confirm. Use a non-default choice. A settings redesign
+once moved a value into the detail-page heading and silently removed it from the
+confirmation page's shared summary; a rendered request regression caught the
+omission. Checking only the final saved value would have missed it.
 
 When moving configuration into persisted records while preserving behavior,
 assert representative literal values independently of the accessor under test.
