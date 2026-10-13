@@ -2,7 +2,7 @@
 
 Status: cross-repository default
 
-Last reviewed: 2026-10-11
+Last reviewed: 2026-10-13
 
 ## Purpose
 
@@ -492,6 +492,13 @@ actions.
   widths, neighbor positions, and control coordinates before and after opening;
   click the same viewport point to close it. Bring the control into view first
   and account for scrolling so the geometry assertion measures the interaction.
+- Test opened menus with long valid unbroken content, not only their truncated
+  triggers. An account menu once widened the page when opened with a long email,
+  although the capped trigger fit and existing screenshots showed the menu
+  closed. Use synthetic content at narrow and navigation-expansion widths,
+  wait for the menu to open, and assert the full value and actions remain
+  reachable without horizontal page overflow. Rebuild test assets after CSS
+  changes so a stale compiled stylesheet cannot hide the regression.
 - Run axe-core in the real headless browser against representative pages and
   dynamic states, such as public, authenticated, error, and open-dialog states
   when they exist. For RSpec/Capybara applications, prefer Deque's maintained
