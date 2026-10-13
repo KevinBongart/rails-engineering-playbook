@@ -303,6 +303,18 @@ same application.
   already authorized. Never infer permission to write or to bypass an environment
   guard.
 
+Provide supported commands for authenticated tasks and name the purpose-scoped
+credentials they may use; if one is missing or refused, stop rather than searching
+unrelated configuration. A missing download/upload tool once led an agent to
+search general configuration for secrets. Its replacement initially trusted an
+owned-resource URL prefix, but dot segments could escape that resource after
+normalization. Before attaching credentials, validate the HTTPS origin and the
+decoded path's resource scope, including encoded traversal and separators.
+Strip credentials before following redirects, and keep API keys out of signed
+storage requests. Exercise these boundaries with synthetic credentials through
+the public command, including traversal, redirects and missing credentials;
+provider metadata alone does not prove that a URL is safe to authenticate.
+
 ## Database design, tenancy, and performance
 
 ### Integrity first
