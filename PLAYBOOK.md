@@ -344,6 +344,16 @@ same order. Adding a lock to one path cannot make an external payment call
 idempotent or undo a provider-side charge; use provider idempotency keys and an
 explicit payment state transition for that boundary.
 
+Bulk SQL updates and writes through another model instance do not refresh an
+already-loaded Active Record object. When a transition reuses that object,
+reload it under the invariant's lock or explicitly ensure each required state
+change is persisted; a transaction alone does not refresh its attributes or
+change tracking. One transition cleared a selection through another model
+instance, then assigned the old value to an object that still held it. Partial
+updates omitted that unchanged attribute and left no row selected. Cover this
+sequence with a regression that retains the stale instance and asserts database
+state, then verify that removing the persistence guard makes it fail.
+
 ### Tenant and ownership boundaries
 
 Every tenant-facing lookup begins from the authenticated owner or tenant
