@@ -2,7 +2,7 @@
 
 Status: cross-repository default
 
-Last reviewed: 2026-10-13
+Last reviewed: 2026-10-15
 
 ## Purpose
 
@@ -539,6 +539,11 @@ actions.
   widths, neighbor positions, and control coordinates before and after opening;
   click the same viewport point to close it. Bring the control into view first
   and account for scrolling so the geometry assertion measures the interaction.
+  Account for scrollbars changing the viewport width too. A centered dashboard
+  header once shifted a few pixels when expansion introduced a scrollbar; an
+  absolute-coordinate equality assertion failed even though the original pointer
+  point still closed the disclosure. Check relative layout and click the original
+  point rather than requiring every viewport coordinate to remain identical.
 - Test opened menus with long valid unbroken content, not only their truncated
   triggers. An account menu once widened the page when opened with a long email,
   although the capped trigger fit and existing screenshots showed the menu
