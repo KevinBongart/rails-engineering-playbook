@@ -2,7 +2,7 @@
 
 Status: cross-repository default
 
-Last reviewed: 2026-10-13
+Last reviewed: 2026-10-21
 
 ## Purpose
 
@@ -726,6 +726,11 @@ optional:
 - escape output and use Rails tag helpers rather than `raw` string assembly;
 - use strong parameters;
 - filter passwords, tokens, payment fields, and private URLs from logs;
+- apply the same filtering to structured audit records and signed form payloads.
+  A settings-editor review caught old and new secrets bypassing request filters
+  through an audit change hash; its signed confirmation also carried
+  recoverable form values. Signing does not encrypt a payload. Test both request
+  filtering and audit output rather than assuming one protects the other;
 - keep secrets in Rails credentials or environment variables, never the repo;
 - require the production master key when credentials are required;
 - use modern payment APIs and never store raw card details;
