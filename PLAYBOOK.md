@@ -2,7 +2,7 @@
 
 Status: cross-repository default
 
-Last reviewed: 2026-10-13
+Last reviewed: 2026-11-04
 
 ## Purpose
 
@@ -182,6 +182,21 @@ cosmetic duplication.
 Search for an existing constant or helper before introducing another list of the
 same fields. A new abstraction should reduce the number of owners of a rule, not
 move duplicated knowledge into a new file.
+
+Some duplication cannot be extracted. Whether a column is something an
+administrator edits is decided in three places at once: the table, the
+strong-parameters list, and the form. When those three disagree, the column is
+stored and validated but no screen can set it, and no ordinary test fails,
+because every test exercises the fields that are already listed. One
+application stored a required, unique setting on every row while its permit
+list and form both left it out, so administrators could only accept the
+generated value. When a record's settings are edited through a fixed list, add
+one spec that classifies every column as either an editable setting or as
+managed elsewhere with its reason (keys, timestamps, workflow state, ownership
+links), and checks that each form renders an input for every editable setting.
+For example, a `Venue` spec would require `booking_fee` to be listed either as
+editable or with a reason it is not, so a newly added column fails until
+someone decides which.
 
 Never override an inherited method with an identical copy. Rely on inheritance
 or change the shared owner explicitly.
