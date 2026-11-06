@@ -2,7 +2,7 @@
 
 Status: cross-repository default
 
-Last reviewed: 2026-10-13
+Last reviewed: 2026-11-06
 
 ## Purpose
 
@@ -685,6 +685,15 @@ spec in Selenium makes the suite slower and more fragile without adding value.
   builds shares one title: it passes for any row, including the row the change
   under test was supposed to exclude. Two such assertions once guarded an
   authorization fix and would both have passed with the fix reverted.
+- Drive a regression test through the code path where the bug happened, not
+  only through a helper the fix introduced. A test that calls the new helper
+  directly fails before the fix only because the helper does not exist yet; if
+  the call site later reverts to the old behavior, the helper still exists and
+  the test stays green. One fix to a polling loop that reprinted an unchanged
+  status list on every pass extracted a "print only when changed" method and
+  tested that method alone. Restoring the old unconditional print in the loop
+  passed all three examples. Check a regression test by reverting the call
+  site, not the whole diff.
 - Run examples in random order and make time travel block-scoped or reliably
   reset.
 - After browser navigation or history restoration, synchronize on the observable
