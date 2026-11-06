@@ -2,7 +2,7 @@
 
 Status: cross-repository default
 
-Last reviewed: 2026-10-13
+Last reviewed: 2026-11-06
 
 ## Purpose
 
@@ -1179,6 +1179,34 @@ for reconsideration; mandatory policy still applies.
 - Mention temporary limitations and the next product iteration.
 - Commit, push, open/merge a PR, or deploy only when the user has authorized that
   workflow.
+
+### Gate automation on verdicts, not on words
+
+When automation decides whether work may advance by reading what an agent or a
+person wrote, read a verdict rather than a keyword. A check that asks whether a
+comment mentions "verification" anywhere is satisfied by "verification: not
+passed", and by "will do the verification after the release". An adopting
+application's delivery orchestrator moved a ticket past its deploy stage on a
+comment that opened by saying verification had not passed and listed what was
+still unchecked. Its next gate accepted any comment containing the word
+"retrospective", including one that said the retrospective was still owed.
+
+- Fix the verdict's place and vocabulary: the first line of the comment, in a
+  small closed set such as `Smoke test: passed | not passed`. Do not accept a
+  quoted line, because quoting a verdict to dispute it is not restating it.
+- Let the newest verdict win, ordered by parsed timestamp rather than by the
+  order an API happens to return. Compare instants, not strings: providers
+  disagree about fractional seconds.
+- Require evidence to postdate the thing it vouches for. A verification written
+  before the last merge verified something else.
+- When the verdict names an artifact, check the artifact itself in the system
+  that holds it, not the claim. For example, a "fixed in" link to a merged pull
+  request should be in this repository, merged inside the relevant window, and
+  name the work item. Otherwise the work's own earlier pull request, or anybody
+  else's, satisfies it.
+- Pin the real failing comment as a test against the old matcher, and have an
+  adversarial reviewer look for the cheapest false claim that still passes.
+  Each review round of the fix above found one.
 
 ## Definition of done
 
