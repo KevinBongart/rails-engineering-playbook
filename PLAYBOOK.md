@@ -2,7 +2,7 @@
 
 Status: cross-repository default
 
-Last reviewed: 2026-10-13
+Last reviewed: 2026-11-10
 
 ## Purpose
 
@@ -813,6 +813,18 @@ An autoload check or a job without a database service does not establish that
 boundary. A settings-extraction review added this gate; a temporary load-time
 read made it fail with a missing-database error while the original code passed.
 Use such a mutation probe to confirm the gate rejects the intended regression.
+
+A dependency audit that reports only the advisories a branch introduces keeps
+inherited advisories from blocking unrelated work, but it is a parser of another
+tool's report, and it fails open wherever that parsing is lenient. Count any
+result that is not a recognized advisory, rather than skipping it. Key each
+advisory by advisory and package, so one package's inherited copy cannot excuse
+another's. Decide that a build is on the default branch from the branch CI
+names, not from equality with a fetched tip. Test the gate against the JSON
+each tool actually prints. In one application all three holes survived because
+the specs stubbed the parsing and tested only the comparison: an `http://` gem
+source, which the audit tool reports with no advisory at all, passed on every
+branch and on `main`.
 
 Cancel superseded workflows on non-default branches when the CI provider
 supports it. One five-job validation pipeline kept running after a newer commit
